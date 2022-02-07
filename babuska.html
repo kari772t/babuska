@@ -1,21 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bsitro Babuska</title>
 
-<Style>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      img {
+        max-width: 100%;
+      }
+      main {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      }
 
+      article {
+        border: 1px solid black;
+        padding: 1rem;
+        margin: 1rem;
+        border-radius: 25px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <nav class="filter">
+        <button data-kategori="alle" class="valgt">Alle</button>
+        <button data-kategori="forretter">Forretter</button>
+        <button data-kategori="hovedretter">Hovedretter</button>
+        <button data-kategori="desserter">Desserter</button>
+        <button data-kategori="drikkevarer">Drikkevarer</button>
+      </nav>
 
-</Style>
-</head>
-<body>
-    
+      <section><h2>Alle</h2></section>
+      <template>
+        <article>
+          <img src="" alt="" />
+          <h3 class="navn"></h3>
+          <p class="origin">Oprindelse:</p>
+          <p class="kortbeskriv"></p>
+          <p class="pris">Pris:</p>
+        </article>
+      </template>
+    </main>
+
     <script>
+      //denne const bruger vi til at hente klonerne ind til slut:
+      const main = document.querySelector("main");
+      //denne const bruger vi til at hente vores template:
+      const template = document.querySelector("template");
+      // denne const bruger vi til at hente linket til databasen:
+      const url = "https://babushka-dd8a.restdb.io/rest/menu";
+      // jeg ved ikke hvad denne gør:
+      const options = {
+        headers: {
+          "x-apikey": "600ec2fb1346a1524ff12de4",
+        },
+      };
 
-        
+
+      // jeg ved ikke hvad denne gør:
+      async function hentData() {
+        const resspons = await fetch(url, options);
+        const json = await resspons.json();
+        vis(json);
+      }
+
+      //for at vise retterne laver jeg en funktion der definerer hvilke af dataerne fra databasen vi vil se:
+      //
+      function vis(retter) {
+        console.log(retter);
+        //forEach henter info fra samme katagori. eg. navn på alle elementer i databasen.
+        retter.forEach((ret) => {
+          // Denne const er den vi henter data ind med til vores template:
+          const klon = template.cloneNode(true).content;
+          klon.querySelector("img").src =
+            "medium/" + ret.billednavn + "-md.jpg";
+          klon.querySelector("img").alt = ret.billednavn;
+
+          // her bruger jeg klon til at hente .origin, .navn osv, som er de classer jeg har givet mine felter i templaten.
+          // textContent returnerer tekst. eg. oprindelsesregion (navn i array i konsollen) for hver ret.
+          klon.querySelector(".origin").textContent = ret.oprindelsesregion;
+          klon.querySelector(".navn").textContent = ret.navn;
+          klon.querySelector(".kortbeskriv").textContent = ret.kortbeskrivelse;
+          klon.querySelector(".pris").textContent = ret.pris;
+
+          //det er her vi henter alle "klon.er" (retterne) ind:
+          main.appendChild(klon);
+        });
+      }
+      hentData();
     </script>
-</body>
+  </body>
 </html>
