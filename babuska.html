@@ -4,53 +4,162 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bsitro Babuska</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Eczar:wght@400;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>Bistro Babushka</title>
 
     <style>
       * {
         box-sizing: border-box;
       }
+
       img {
         max-width: 100%;
       }
-      main {
+
+      h1 {
+        font-family: "Eczar", serif;
+        font-weight: 800;
+        font-size: 9rem;
+        color: white;
+        position: absolute;
+        top: 15%;
+        left: 10%;
+      }
+
+      h2 {
+        font-family: "Eczar", serif;
+        font-weight: 800;
+        font-size: 2rem;
+      }
+      article h3 {
+        font-family: "Eczar", serif;
+        font-weight: 800;
+        font-size: 1.3rem;
+        line-height: 1.6rem;
+      }
+      article p {
+        font-family: "Eczar", serif;
+        font-weight: 400;
+        font-size: 1rem;
+        line-height: 1.4rem;
+      }
+      article .pris {
+        font-family: "Eczar", serif;
+        font-weight: 800;
+        font-size: 1rem;
+      }
+      .hero_container {
+        position: relative;
+      }
+      .hero_container img {
+        width: 100%;
+        height: 500px;
+        filter: blur(5px);
+      }
+
+      a {
+        font-family: "Eczar", serif;
+        font-size: 2rem;
+        text-decoration: none;
+        color: black;
+      }
+      header {
+        text-align: center;
+      }
+
+      header img {
+        max-width: 100vw;
+      }
+      section {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        margin-left: 10rem;
+        margin-right: 10rem;
       }
 
       article {
         border: 1px solid black;
-        padding: 1rem;
+        padding: 1.3rem;
         margin: 1rem;
-        border-radius: 25px;
+        border-radius: 20px;
+      }
+
+      ul {
+        list-style: none;
+        display: flex;
+        float: right;
+        margin-right: 2rem;
+        gap: 40px;
+      }
+
+      button {
+        font-family: "Eczar", serif;
+        font-size: 1.2rem;
+        padding: 1px 17px;
+        margin: 1rem;
+        margin-top: 3rem;
+        background-color: white;
+        border-radius: 7px;
+      }
+
+      footer {
+        margin: 3px;
+        text-align: center;
       }
     </style>
   </head>
+
   <body>
-    <main>
-      <nav class="filter">
+    <header>
+      <div class="hero_container">
+        <nav>
+          <ul>
+            <li><a href="#">Om os</a></li>
+            <li><a href="#">Menu</a></li>
+            <li><a href="#">Book bord</a></li>
+          </ul>
+        </nav>
+        <img src="babus.webp" alt="babushka billede" />
+
+        <h1>Bistro Babushka</h1>
+      </div>
+
+      <nav>
         <button data-kategori="alle" class="valgt">Alle</button>
         <button data-kategori="forretter">Forretter</button>
         <button data-kategori="hovedretter">Hovedretter</button>
         <button data-kategori="desserter">Desserter</button>
         <button data-kategori="drikkevarer">Drikkevarer</button>
       </nav>
+      <h2>Alle</h2>
+    </header>
 
-      <section><h2>Alle</h2></section>
-      <template>
-        <article>
-          <img src="" alt="" />
-          <h3 class="navn"></h3>
-          <p class="origin">Oprindelse:</p>
-          <p class="kortbeskriv"></p>
-          <p class="pris">Pris:</p>
-        </article>
-      </template>
-    </main>
+    <section id="liste"></section>
+
+    <template>
+      <article class="ret">
+        <img src="" alt="" class="billede" />
+        <h3 class="navn"></h3>
+        <p class="origin"></p>
+        <p class="kortbeskriv"></p>
+        <p class="pris"></p>
+      </article>
+    </template>
+
+    <footer>
+      <hr />
+      <p>Adresse: Engadeigaden 100 1234 København K</p>
+      <p>Åbningstider: Mandag - fredag 10:30 - 22:00 Lørdag 12:00 - 23:00</p>
+    </footer>
 
     <script>
       //denne const bruger vi til at hente klonerne ind til slut:
-      const main = document.querySelector("main");
+      const header = document.querySelector("header h2");
       //denne const bruger vi til at hente vores template:
       const template = document.querySelector("template");
       // denne const bruger vi til at hente linket til databasen:
@@ -61,39 +170,77 @@
           "x-apikey": "600ec2fb1346a1524ff12de4",
         },
       };
+      //Den første funktion der kaldes efter DOM er loaded.
+      document.addEventListener("DOMContentLoaded", start);
+      let retter;
+      let filter = "alle";
 
+      function start() {
+        const filterknapper = document.querySelectorAll("nav button");
+        filterknapper.forEach((knap) =>
+          knap.addEventListener("click", filtrerRetter)
+        );
+      }
+      function filtrerRetter() {
+        filter = this.dataset.kategori;
+        document.querySelector(".valgt").classList.remove("valgt");
+        this.classList.add("valgt");
+        //når der klikkes på en knap, sørger eventhandleren.funktionen for, at h2-overskriften indehold opdateres. this henviser til den button der er klikket på;
+        header.textContent = this.textContent;
+        vis(retter);
+        console.log(this);
+      }
 
       // jeg ved ikke hvad denne gør:
       async function hentData() {
         const resspons = await fetch(url, options);
-        const json = await resspons.json();
-        vis(json);
+        retter = await resspons.json();
+        vis(retter);
       }
 
       //for at vise retterne laver jeg en funktion der definerer hvilke af dataerne fra databasen vi vil se:
       //
       function vis(retter) {
         console.log(retter);
+        const dest = document.querySelector("#liste");
+        dest.textContent = "";
+
         //forEach henter info fra samme katagori. eg. navn på alle elementer i databasen.
         retter.forEach((ret) => {
           // Denne const er den vi henter data ind med til vores template:
-          const klon = template.cloneNode(true).content;
-          klon.querySelector("img").src =
-            "medium/" + ret.billednavn + "-md.jpg";
-          klon.querySelector("img").alt = ret.billednavn;
+          //Loop igennem json (retter)
+          if (filter == ret.kategori || filter == "alle") {
+            const klon = template.cloneNode(true).content;
+            klon.querySelector("img").src =
+              "medium/" + ret.billednavn + "-md.jpg";
+            klon.querySelector("img").alt = ret.billednavn;
 
-          // her bruger jeg klon til at hente .origin, .navn osv, som er de classer jeg har givet mine felter i templaten.
-          // textContent returnerer tekst. eg. oprindelsesregion (navn i array i konsollen) for hver ret.
-          klon.querySelector(".origin").textContent = ret.oprindelsesregion;
-          klon.querySelector(".navn").textContent = ret.navn;
-          klon.querySelector(".kortbeskriv").textContent = ret.kortbeskrivelse;
-          klon.querySelector(".pris").textContent = ret.pris;
+            // her bruger jeg klon til at hente .origin, .navn osv, som er de classer jeg har givet mine felter i templaten.
+            // textContent returnerer tekst. eg. oprindelsesregion (navn i array i konsollen) for hver ret.
+            klon.querySelector(".origin").textContent =
+              "Region: " + ret.oprindelsesregion;
+            klon.querySelector(".navn").textContent = ret.navn;
+            klon.querySelector(".kortbeskriv").textContent =
+              ret.kortbeskrivelse;
+            klon.querySelector(".pris").textContent =
+              "Pris: " + ret.pris + " kr.";
 
-          //det er her vi henter alle "klon.er" (retterne) ind:
-          main.appendChild(klon);
+            klon
+              .querySelector(".ret")
+              .addEventListener("click", () => visDetalje(ret));
+
+            //det er her vi henter alle "klon.er" (retterne) ind:
+            dest.appendChild(klon);
+          }
         });
       }
       hentData();
+
+      function visDetalje(retten) {
+        //her navigerer vi med location.href hen til en side. vi sender urlParametret id med og det får værdien af hvem._id
+
+        location.href = `babuska_detalje.html?id=${retten._id}`;
+      }
     </script>
   </body>
 </html>
