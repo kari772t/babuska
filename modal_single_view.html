@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        padding: 0;
+      }
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+        gap: 30px;
+      }
+      article {
+        gap: 20px;
+        border: 3px solid #333;
+        padding: 10px;
+      }
+
+      img {
+        max-width: 100%;
+      }
+      header {
+        background-color: orange;
+        color: red;
+      }
+      header h1 {
+        margin: 30px;
+        font-size: 3rem;
+      }
+      main {
+        margin-top: 20px;
+        margin-left: 4rem;
+        margin-right: 4rem;
+      }
+      .valgt {
+        background-color: rgb(177, 214, 214);
+      }
+      nav {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+      }
+      main h1 {
+        font-size: 1.5rem;
+      }
+      main h2 {
+        font-size: 1rem;
+      }
+
+      #modal {
+        display: none;
+        width: 100vw;
+        height: 100vh;
+        position: fixed;
+        background-color: #000000dd;
+        left: 0;
+        top: 0;
+      }
+      #modal article {
+        max-width: 60%;
+        margin: auto;
+        margin: block;
+        background-color: blanchedalmond;
+        
+      }
+      button {
+         
+      }
+
+      #luk {
+        cursor: pointer;
+        
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <br />
+      <h1>bistro babushka</h1>
+      <br />
+      <h2>Alle</h2>
+      <nav>
+        <button data-kategori="alle" class="valgt">Alle</button>
+        <button data-kategori="desserter">desserter</button>
+        <button data-kategori="drikkevarer">drikkevarer</button>
+        <button data-kategori="hovedretter">hovedretter</button>
+        <button data-kategori="sideorders">sideorders</button>
+        <button data-kategori="forretter">forretter</button>
+      </nav>
+    </header>
+
+    <main>
+      <aside id="modal">
+        <article>
+          <img src="" alt="" />
+          <h3 class="navn"></h3>
+          <h2 class="kortbeskrivelse"></h2>
+          <p class="kategori"></p>
+          <p class="langbeskrivelse"></p>
+          <p class="oprindelsesregion"></p>
+          <p class="pris"></p>
+         <div id="luk">&#x2715</div>
+        </article>
+      </aside>
+
+      <section class="data-container"></section>
+      <template>
+        <article class="menu">
+          <h1 class="navn"></h1>
+          <img src="" alt="" />
+          <h2 class="kortbeskrivelse"></h2>
+          <p class="kategori"></p>
+          <p class="langbeskrivelse"></p>
+          <p class="oprindelsesregion"></p>
+          <p class="pris"></p>
+        </article>
+      </template>
+    </main>
+
+    <script>
+      const header = document.querySelector("header h2");
+      const url = "https://babushka-dd8a.restdb.io/rest/menu";
+      const modal = document.querySelector("#modal");
+      const Options = {
+        headers: {
+          "x-apikey": "600ec2fb1346a1524ff12de4",
+        },
+      };
+
+      document.addEventListener("DOMContentLoaded", start);
+      let retter;
+      let filter = "alle";
+
+      function start() {
+        const filterKnap = document.querySelectorAll("nav button");
+        filterKnap.forEach((knap) =>
+          knap.addEventListener("click", filtrerRetter)
+        );
+        loadJSON();
+      }
+
+      function filtrerRetter() {
+        filter = this.dataset.kategori;
+        visRet();
+        header.textContent = this.textContent;
+        document.querySelector(".valgt").classList.remove("valgt");
+        this.classList.add("valgt");
+      }
+
+      async function loadJSON() {
+        const JSONData = await fetch(url, Options);
+        retter = await JSONData.json();
+        console.log("retter", retter);
+        visRet();
+      }
+
+      function visRet() {
+        const section = document.querySelector("section");
+        const template = document.querySelector("template");
+        section.textContent = "";
+        retter.forEach((ret) => {
+          if (filter == ret.kategori || filter == "alle") {
+            console.log("valgtmenu", ret.kategori);
+            const klon = template.cloneNode(true).content;
+            klon.querySelector("h1").textContent = `${ret.navn}`;
+            klon.querySelector("img").src =
+              "medium/" + ret.billednavn + "-md.jpg";
+            klon.querySelector("h2").textContent = `${ret.kortbeskrivelse}`;
+            klon.querySelector(
+              "p + p + p + p"
+            ).textContent = `pris: ${ret.pris}`;
+            klon
+              .querySelector("article")
+              .addEventListener("click", () => visDetaljer(ret));
+            section.appendChild(klon);
+          }
+        });
+      
+
+
+      function visDetaljer(ret) {
+        console.log(ret);
+        modal.querySelector("img").src = "medium/" + ret.billednavn + "-md.jpg";
+        modal.querySelector("h3").textContent = ret.navn;
+        modal.querySelector("p").textContent = `${ret.langbeskrivelse}`;
+        modal.style.display = "block";
+      }
+
+      document.querySelector("#luk").addEventListener("click", () => (modal.style.display = "none"));
+      
+      }
+
+      // modal.addEventListener("click", () => (modal.style.display = "none"));
+    </script>
+  </body>
+</html>
