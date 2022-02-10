@@ -66,8 +66,8 @@
       section {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        margin-left: 10rem;
-        margin-right: 10rem;
+        margin-left: auto;
+        margin-right: auto;
       }
       article {
         border: 1px solid black;
@@ -139,8 +139,6 @@
         <article>
           <img src="" alt="" />
           <h3 class="navn"></h3>
-          <p class="kortbeskrivelse"></p>
-          <p class="kategori"></p>
           <p class="langbeskrivelse"></p>
           <p class="oprindelsesregion"></p>
           <p class="pris"></p>
@@ -231,8 +229,8 @@
         console.log(ret);
         modal.querySelector("img").src = "medium/" + ret.billednavn + "-md.jpg";
         modal.querySelector("h3").textContent = ret.navn;
-        modal.querySelector (".oprindelsesregion").textContent = "Region: " + ret.oprindelsesregion;
         modal.querySelector("p").textContent = `${ret.langbeskrivelse}`;
+        modal.querySelector (".oprindelsesregion").textContent = "Region: " + ret.oprindelsesregion;
         modal.querySelector(".pris").textContent = "Pris: " + ret.pris + " kr.";
         modal.style.display = "block";
       }
